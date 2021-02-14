@@ -108,8 +108,6 @@ class Actor:
         if (curr_x < 0 or curr_y < 0):
             return False
 
-
-
         # logic to move multiple objects at the same time.....
         # count the number of objects that needs to move and there reference....
 
@@ -118,36 +116,40 @@ class Actor:
         temp_x=curr_x
         temp_y=curr_y
         temp_actor=game_.get_actor(temp_x,temp_y)
-
+        if(temp_actor!=None):
+            print(temp_actor._is_push)
         # storing all the movable actors in the consecutive manner
         while(temp_actor!=None and temp_actor._is_push):
             actor_in_line.append(game_.get_actor(temp_x,temp_y))
             temp_x+=dx
             temp_y+=dy
             temp_actor = game_.get_actor(temp_x, temp_y)
-            print("is Push is true")
+            print("while loop")
+
+        if (temp_actor == None):
+            #     movement of entire line is now possible
+            for temp_actor_in_line in actor_in_line:
+                actor_current_x = temp_actor_in_line.x + dx
+                actor_current_y = temp_actor_in_line.y + dy
+                rect_other_actor = pygame.Rect(actor_current_x * TILESIZE,
+                                               actor_current_y * TILESIZE, TILESIZE, TILESIZE)
+                game_.screen.blit(temp_actor_in_line.image, rect_other_actor)
+                temp_actor_in_line.x = actor_current_x
+                temp_actor_in_line.y = actor_current_y
+
 
         # moving the stored actors
         if(temp_actor!=None and  temp_actor._is_push==False):
-            return False
+            rect = pygame.Rect(curr_x * TILESIZE,
+                               curr_y * TILESIZE, TILESIZE, TILESIZE)
+            game_.screen.blit(self.image, rect)
+            self.x = curr_x
+            self.y = curr_y
 
-        if(temp_actor==None):
-         #     movement of entire line is now possible
-          for temp_actor_in_line in actor_in_line:
-              actor_current_x = temp_actor_in_line.x + dx
-              actor_current_y = temp_actor_in_line.y + dy
-              rect_other_actor = pygame.Rect(actor_current_x * TILESIZE,
-                                             actor_current_y * TILESIZE, TILESIZE, TILESIZE)
-              game_.screen.blit(temp_actor_in_line.image, rect_other_actor)
-              temp_actor_in_line.x = actor_current_x
-              temp_actor_in_line.y = actor_current_y
-              print("allowed Movement")
 
         rect = pygame.Rect(curr_x * TILESIZE,
                            curr_y * TILESIZE, TILESIZE, TILESIZE)
-
         game_.screen.blit(self.image, rect)
-
         self.x=curr_x
         self.y=curr_y
 
@@ -401,8 +403,6 @@ class Meepo(Character):
             dy += 1
 
         return dx, dy
-        
-
 
 
 
@@ -429,8 +429,8 @@ class Wall(Character):
         self.image=load_image(WALL_SPRITE)
         self.x=x
         self.y=y
-        self._is_push=False
-        self._is_stop=False
+
+
 
 
 class Rock(Character):
@@ -440,8 +440,7 @@ class Rock(Character):
         self.image=load_image(ROCK_SPRITE)
         self.x = x
         self.y = y
-        self._is_push=False
-        self._is_stop=True
+
 
 
 class Flag(Character):

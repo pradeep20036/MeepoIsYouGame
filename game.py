@@ -56,7 +56,7 @@ class Game:
         self._actors=[]
         self._is=[]
         self._running=True
-
+        self._rules=[]
         # for testing purpose the player is initialized with a character
         self.player=actor.Meepo(10,10)
 
@@ -160,7 +160,7 @@ class Game:
                         save = self._copy()
                         if self.player.player_move(self) and not self.win_or_lose():
                             self._history.push(save)
-                            print("Here")
+
         return
 
     def win_or_lose(self) -> bool:
@@ -218,7 +218,7 @@ class Game:
         # - Apply the additional and removal of the rules. When applying the
         #   rules of a type of character, make sure all characters of that type
         #   have their flags correctly updated. Hint: take a look at the
-        #   get_character() method -- it can be useful. 
+        #   get_character() method -- it can be useful. take a look
         # - The player may change if the "isYou" rule is updated. Make sure set
         #   self.player correctly after you update the rules. Note that
         #   self.player could be None in some cases.
@@ -241,22 +241,75 @@ class Game:
             new_rules=actor.Is.update(is_tiles,up,down,left,right)
             new_list_of_rules.extend(new_rules)
 
-        # changing the behaviour of the game according to the rules
+        # changing the behaviour of the game according to the newRules
         for rule in new_list_of_rules:
             words_in_rule=rule.split()
             if(len(words_in_rule))>0:
                 curr_actor=self.get_character(words_in_rule[0])
                 get_action=words_in_rule[1]
                 if(get_action=="isPush"):
-                    curr_actor._is_push=True
+                    for actor_temp in self._actors:
+                        if( isinstance(actor_temp,curr_actor)):
+                            actor_temp._is_push=True
+
                 if (get_action == "isStop"):
-                    curr_actor._is_stop = True
+
+                    for actor_temp in self._actors:
+                        if( isinstance(actor_temp,curr_actor)):
+                            actor_temp._is_stop = True
+
                 if (get_action == "isYou"):
-                    curr_actor._is_player=True
+                    for actor_temp in self._actors:
+                        if( isinstance(actor_temp,curr_actor)):
+                            actor_temp._is_player=True
+
                 if (get_action == "isLose"):
-                    curr_actor._is_lose=True
+                    for actor_temp in self._actors:
+                        if( isinstance(actor_temp,curr_actor)):
+                            actor_temp._is_lose=True
+
                 if (get_action == "isVictory"):
-                    curr_actor._is_win = True
+                    for actor_temp in self._actors:
+                        if( isinstance(actor_temp,curr_actor)):
+                            actor_temp._is_win =True
+
+
+        # code to change the behaviour if the rules are deleted
+        old_rules=self.get_rules()
+        for old_rule in old_rules:
+            if(old_rule not in new_list_of_rules):
+                words_in_rule = old_rule.split()
+                if (len(words_in_rule)) > 0:
+                    curr_actor = self.get_character(words_in_rule[0])
+                    get_action = words_in_rule[1]
+
+                    if (get_action == "isPush"):
+                        for actor_temp in self._actors:
+                            if (isinstance(actor_temp, curr_actor)):
+                                actor_temp._is_push = False
+
+                    if (get_action == "isStop"):
+
+                        for actor_temp in self._actors:
+                            if (isinstance(actor_temp, curr_actor)):
+                                actor_temp._is_stop = False
+
+                    if (get_action == "isYou"):
+                        for actor_temp in self._actors:
+                            if (isinstance(actor_temp, curr_actor)):
+                                actor_temp._is_player = False
+
+                    if (get_action == "isLose"):
+                        for actor_temp in self._actors:
+                            if (isinstance(actor_temp, curr_actor)):
+                                actor_temp._is_lose = False
+
+                    if (get_action == "isVictory"):
+                        for actor_temp in self._actors:
+                            if (isinstance(actor_temp, curr_actor)):
+                                actor_temp._is_win = False
+        #         we need to negate the effect of the rule
+
 
         self._rules=new_list_of_rules
 
