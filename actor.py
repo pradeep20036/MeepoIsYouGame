@@ -96,52 +96,57 @@ class Actor:
           objects as long as the move is not blocked by something.
         """
 
-
         # TODO Task 2: Complete this method
 
-        # while moving if anyother actor is present
+        # while moving if another actor is present
 
         curr_x=self.x+dx
         curr_y=self.y+dy
 
+        if (curr_x > 25 or curr_y > 18):
+            return False
+        if (curr_x < 0 or curr_y < 0):
+            return False
+
         print("Our_Actor position %d is %d  ", curr_x, curr_y)
 
+        # logic to move multiple objects at the same time.....
+        # count the number of objects that needs to move and there reference....
 
-        if(curr_x>25 or curr_y>18):
+        # variable to capture all the actor in the same line
+        actor_in_line=[]
+        temp_x=curr_x
+        temp_y=curr_y
+        temp_actor=game_.get_actor(temp_x,temp_y)
+
+        # storing all the movable actors in the consecutive manner
+        while(temp_actor!=None and temp_actor.is_push()):
+            actor_in_line.append(game_.get_actor(temp_x,temp_y))
+            temp_x+=dx
+            temp_y+=dy
+            temp_actor = game_.get_actor(temp_x, temp_y)
+
+        # moving the stored actors
+
+        if(temp_actor!=None and  temp_actor.is_push()==False):
             return False
-        if(curr_x<0 or curr_y<0):
-            return False
 
-        actor_current=game_.get_actor(curr_x,curr_y)
+        if(temp_actor==None):
+         #     movement of entire line is now possible
+          for temp_actor_in_line in actor_in_line:
+              actor_current_x = temp_actor_in_line.x + dx
+              actor_current_y = temp_actor_in_line.y + dy
+              rect_other_actor = pygame.Rect(actor_current_x * TILESIZE,
+                                             actor_current_y * TILESIZE, TILESIZE, TILESIZE)
+              game_.screen.blit(temp_actor_in_line.image, rect_other_actor)
+              temp_actor_in_line.x = actor_current_x
+              temp_actor_in_line.y = actor_current_y
 
-        actor_current_x =0
-        actor_current_y =0
-
-        if(actor_current!=None):
-            if(actor_current.is_push()):
-                actor_current_x=actor_current.x+dx
-                actor_current_y=actor_current.y+dy
-
-            else:
-                return False
-        else:
-            print("actor_current is None")
-
-
-        if(actor_current!=None):
-            rect_other_actor= pygame.Rect(actor_current_x * TILESIZE,
-                               actor_current_y * TILESIZE, TILESIZE, TILESIZE)
-            game_.screen.blit(actor_current.image, rect_other_actor)
-            actor_current.x = actor_current_x
-            actor_current.y = actor_current_y
-
-        print("Current_Actor position after %d is %d  ", actor_current_x, actor_current_y)
 
         rect = pygame.Rect(curr_x * TILESIZE,
                            curr_y * TILESIZE, TILESIZE, TILESIZE)
 
         game_.screen.blit(self.image, rect)
-
 
         self.x=curr_x
         self.y=curr_y
