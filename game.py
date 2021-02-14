@@ -58,7 +58,7 @@ class Game:
         self._running=True
 
         # for testing purpose the player is initialized with a character
-        self.player=actor.Flag(10,10)
+        self.player=actor.Meepo(10,10)
 
         self._history=Stack()
 
@@ -223,7 +223,15 @@ class Game:
         #   self.player correctly after you update the rules. Note that
         #   self.player could be None in some cases.
         # - Update self._rules to the new list of rules.
-       
+
+
+
+
+
+
+
+
+
         return
 
     @staticmethod

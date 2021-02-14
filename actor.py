@@ -513,11 +513,13 @@ class Subject(Block):
     Class representing the Subject blocks in the game, e.g.,
     "Meepo", "Wall", "Flag", "Rock" (see SUBJECTS in settings.py)
     """
-    def __init__(self,x,y,subject):
-        super().__init__(x,y,subject)
+    def __init__(self,x,y,word):
+        super().__init__(x,y,word)
         self.x=x
         self.y=y
-        self.word=subject
+        self.word=word
+        self.image=load_image(WORDS_SPRITES[word.lower()])
+
 
     # TODO Task 1: Add the initializer and any other necessary method
 
@@ -527,11 +529,12 @@ class Attribute(Block):
     Class representing the Attribute blocks in the game, e.g.,
     "Push", "Stop", "Victory", "Lose", "You"
     """
-    def __init__(self, row, col, subject):
-        super().__init__(row, col, subject)
+    def __init__(self, row, col, word):
+        super().__init__(row, col, word)
         self.x = row
         self.y = col
-        self.word = subject
+        self.word =word
+        self.image=load_image(WORDS_SPRITES[word.lower()])
 
     # TODO Task 1: Add the initializer and any other necessary method
 
@@ -546,6 +549,7 @@ class Is(Block):
         super().__init__(x, y, " is")  # Note the space in " is"
         self.image = load_image(IS_PURPLE)
 
+
     # TODO Task 1: Add any missing methods that is necessary
     # You may also leave this for now and revisit it when you work on Task 4
 
@@ -558,6 +562,10 @@ class Is(Block):
         """
         Detect horizontally and vertically if a new rule has been created in
         the format of a string "Subject isAttribute".
+
+
+        # subject: wall,rock,flag,meepo
+        # attribute: push,stop,victory,lose,you
 
         up, down, left, right: the Actors that are adjacent (in the four
         directions) to this IS block
@@ -584,7 +592,31 @@ class Is(Block):
         """
         # TODO Task 3: Complete this method.
 
-        return "", ""
+        rule1=""
+        rule2=""
+        print("Inside update function")
+        if(isinstance(up,Subject) and isinstance(down,Attribute)):
+        #     rule found
+            rule1=up.word+self.word+down.word
+
+        if (isinstance(left, Subject) and isinstance(right, Attribute)):
+        #     rule found
+            rule2 = left.word + self.word + right.word
+
+        if(len(rule1)==0 and len(rule2)==0):
+            self.image=load_image(IS_PURPLE)
+
+        if (len(rule1) == 0 and len(rule2) != 0):
+            self.image = load_image(IS_LIGHT_BLUE)
+
+        if (len(rule1) != 0 and len(rule2) == 0):
+            self.image = load_image(IS_LIGHT_BLUE)
+
+        if (len(rule1) != 0 and len(rule2) != 0):
+            self.image = load_image(IS_DARK_BLUE)
+
+        return rule1,rule2
+
 
 
 def load_image(img_name: str, width: int = TILESIZE,
