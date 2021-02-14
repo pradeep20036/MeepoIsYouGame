@@ -85,6 +85,8 @@ class Actor:
         This more general "move" can be a move caused by a push. In fact, this
         "move" method is used in the implementation of "player_move".
 
+
+
         Things to think about in this method:
         - The object cannot go off the screen boundaries
         - The move may push other objects to move as well.
@@ -97,11 +99,12 @@ class Actor:
 
         # TODO Task 2: Complete this method
 
-        
-
+        # while moving if anyother actor is present
 
         curr_x=self.x+dx
         curr_y=self.y+dy
+
+        print("Our_Actor position %d is %d  ", curr_x, curr_y)
 
 
         if(curr_x>25 or curr_y>18):
@@ -109,9 +112,37 @@ class Actor:
         if(curr_x<0 or curr_y<0):
             return False
 
+        actor_current=game_.get_actor(curr_x,curr_y)
+
+        actor_current_x =0
+        actor_current_y =0
+
+        if(actor_current!=None):
+            if(actor_current.is_push()):
+                actor_current_x=actor_current.x+dx
+                actor_current_y=actor_current.y+dy
+
+            else:
+                return False
+        else:
+            print("actor_current is None")
+
+
+        if(actor_current!=None):
+            rect_other_actor= pygame.Rect(actor_current_x * TILESIZE,
+                               actor_current_y * TILESIZE, TILESIZE, TILESIZE)
+            game_.screen.blit(actor_current.image, rect_other_actor)
+            actor_current.x = actor_current_x
+            actor_current.y = actor_current_y
+
+        print("Current_Actor position after %d is %d  ", actor_current_x, actor_current_y)
+
         rect = pygame.Rect(curr_x * TILESIZE,
                            curr_y * TILESIZE, TILESIZE, TILESIZE)
+
         game_.screen.blit(self.image, rect)
+
+
         self.x=curr_x
         self.y=curr_y
 
@@ -346,18 +377,31 @@ class Meepo(Character):
         # movement of her "arms" and "tail".
         key_pressed = game_.keys_pressed
         if key_pressed[pygame.K_LEFT]:
-            self.image=self.walk_left
+            self.image=self.walk_left[0]
         elif key_pressed[pygame.K_RIGHT]:
-            self.image = self.walk_right
+            self.image = self.walk_right[0]
         elif key_pressed[pygame.K_UP]:
-            self.image = self.walk_up
+            self.image = self.walk_up[0]
         elif key_pressed[pygame.K_DOWN]:
-            self.image = self.walk_down
+            self.image = self.walk_down[0]
+
+        dx, dy = 0, 0
+        if key_pressed[pygame.K_LEFT]:
+            dx -= 1
+        elif key_pressed[pygame.K_RIGHT]:
+            dx += 1
+        elif key_pressed[pygame.K_UP]:
+            dy -= 1
+        elif key_pressed[pygame.K_DOWN]:
+            dy += 1
+
+        return dx, dy
+        
 
 
-        self.player_move(game_)
 
-        return (1, 1)
+
+        return (1,1)
 
 
 # TODO Task 1: add the Wall, Rock, and Flag classes
@@ -380,9 +424,7 @@ class Wall(Character):
         self.image=load_image(WALL_SPRITE)
         self.x=x
         self.y=y
-
-
-
+        self.set_push()
 
 
 class Rock(Character):
@@ -546,7 +588,7 @@ def load_image(img_name: str, width: int = TILESIZE,
     Return a pygame img of the PNG img_name that has been scaled according
     to the given width and size
     """
-    img = pygame.image.load(img_name).convert_alpha()
+    img = pygame.image.load(img_name)
     return pygame.transform.scale(img, (width, height))
 
 

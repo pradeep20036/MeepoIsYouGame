@@ -58,7 +58,7 @@ class Game:
         self._running=True
 
         # for testing purpose the player is initialized with a character
-        self.player=actor.Character(0,0)
+        self.player=actor.Flag(10,10)
 
         self._history=Stack()
 
@@ -297,6 +297,8 @@ if __name__ == "__main__":
     game.load_map(MAP_PATH)
     game.new()
     game.run()
+
+
 
     # import python_ta
     # python_ta.check_all(config={
