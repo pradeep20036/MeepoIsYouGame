@@ -108,7 +108,7 @@ class Actor:
         if (curr_x < 0 or curr_y < 0):
             return False
 
-        print("Our_Actor position %d is %d  ", curr_x, curr_y)
+
 
         # logic to move multiple objects at the same time.....
         # count the number of objects that needs to move and there reference....
@@ -120,15 +120,15 @@ class Actor:
         temp_actor=game_.get_actor(temp_x,temp_y)
 
         # storing all the movable actors in the consecutive manner
-        while(temp_actor!=None and temp_actor.is_push()):
+        while(temp_actor!=None and temp_actor._is_push):
             actor_in_line.append(game_.get_actor(temp_x,temp_y))
             temp_x+=dx
             temp_y+=dy
             temp_actor = game_.get_actor(temp_x, temp_y)
+            print("is Push is true")
 
         # moving the stored actors
-
-        if(temp_actor!=None and  temp_actor.is_push()==False):
+        if(temp_actor!=None and  temp_actor._is_push==False):
             return False
 
         if(temp_actor==None):
@@ -141,7 +141,7 @@ class Actor:
               game_.screen.blit(temp_actor_in_line.image, rect_other_actor)
               temp_actor_in_line.x = actor_current_x
               temp_actor_in_line.y = actor_current_y
-
+              print("allowed Movement")
 
         rect = pygame.Rect(curr_x * TILESIZE,
                            curr_y * TILESIZE, TILESIZE, TILESIZE)
@@ -429,7 +429,8 @@ class Wall(Character):
         self.image=load_image(WALL_SPRITE)
         self.x=x
         self.y=y
-        self.set_push()
+        self._is_push=False
+        self._is_stop=False
 
 
 class Rock(Character):
@@ -439,6 +440,8 @@ class Rock(Character):
         self.image=load_image(ROCK_SPRITE)
         self.x = x
         self.y = y
+        self._is_push=False
+        self._is_stop=True
 
 
 class Flag(Character):
@@ -594,7 +597,6 @@ class Is(Block):
 
         rule1=""
         rule2=""
-        print("Inside update function")
         if(isinstance(up,Subject) and isinstance(down,Attribute)):
         #     rule found
             rule1=up.word+self.word+down.word

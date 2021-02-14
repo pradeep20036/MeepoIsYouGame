@@ -224,15 +224,43 @@ class Game:
         #   self.player could be None in some cases.
         # - Update self._rules to the new list of rules.
 
+        # actors present around the isBlock
 
+        new_list_of_rules=[]
+        # all is tiles are fetched
+        all_Is_tiles=self._is
 
+        for is_tiles in all_Is_tiles:
+            curr_x=is_tiles.x
+            curr_y=is_tiles.y
+            up=self.get_actor(curr_x,curr_y-1)
+            down=self.get_actor(curr_x,curr_y+1)
+            left=self.get_actor(curr_x-1,curr_y)
+            right=self.get_actor(curr_x+1,curr_y)
 
+            new_rules=actor.Is.update(is_tiles,up,down,left,right)
+            new_list_of_rules.extend(new_rules)
 
+        # changing the behaviour of the game according to the rules
+        for rule in new_list_of_rules:
+            words_in_rule=rule.split()
+            if(len(words_in_rule))>0:
+                curr_actor=self.get_character(words_in_rule[0])
+                get_action=words_in_rule[1]
+                if(get_action=="isPush"):
+                    curr_actor._is_push=True
+                if (get_action == "isStop"):
+                    curr_actor._is_stop = True
+                if (get_action == "isYou"):
+                    curr_actor._is_player=True
+                if (get_action == "isLose"):
+                    curr_actor._is_lose=True
+                if (get_action == "isVictory"):
+                    curr_actor._is_win = True
 
+        self._rules=new_list_of_rules
 
-
-
-        return
+        return None
 
     @staticmethod
     def get_character(subject: str) -> Optional[Type[Any]]:
